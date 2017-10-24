@@ -2,12 +2,20 @@
 #define ASCII_MAGIC_IMAGETOASCII_H
 
 #include <string>
+#include <memory>
+
+using byte = unsigned char;
+struct pixel {
+    byte red, green, blue, alpha;
+};
 
 class ImageToASCII {
 public:
-    virtual std::string getASCIString() = 0;
+    std::string getASCIString();
 protected:
     const static std::string scale;
+    pixel** image;
+    int width, height;
 };
 
 #endif //ASCII_MAGIC_IMAGETOASCII_H

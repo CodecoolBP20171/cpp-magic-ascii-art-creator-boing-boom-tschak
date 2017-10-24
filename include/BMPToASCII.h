@@ -6,11 +6,8 @@
 
 class BMPToASCII : public ImageToASCII{
 public:
-    explicit BMPToASCII(std::string filename);
-    std::string getASCIString() override;
-
-private:
-    BMP image;
+    explicit BMPToASCII(const std::string &filename);
+    virtual ~BMPToASCII();
 };
 
 #endif //ASCII_MAGIC_BMPTOASCII_H

@@ -1,19 +1,28 @@
 #include "BMPToASCII.h"
 
-BMPToASCII::BMPToASCII(std::string filename) {
-    image.ReadFromFile(filename.c_str());
+BMPToASCII::BMPToASCII(const std::string &filename) {
+    BMP bmp;
+    bmp.ReadFromFile(filename.c_str());
+    width = bmp.TellWidth();
+    height = bmp.TellHeight();
+    image = new pixel*[height];
+    for (int i = 0; i < height; ++i) {
+        image[i] = new pixel[width];
+    }
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            image[i][j].red = bmp(j, i)->Red;
+            image[i][j].green = bmp(j, i)->Green;
+            image[i][j].blue = bmp(j, i)->Blue;
+            image[i][j].alpha = bmp(j, i)->Alpha;
+        }
+    }
 }
 
-std::string BMPToASCII::getASCIString() {
-    std::string ascii;
-    auto slen = scale.length() - 1;
-    for (int i = 0; i < image.TellHeight(); ++i) {
-        for (int j = 0; j < image.TellWidth(); ++j) {
-            auto val = image(j, i)->Red;
-            auto normVal = round(val / 255.0 * slen);
-            ascii += scale[normVal];
-        }
-        ascii += '\n';
+BMPToASCII::~BMPToASCII() {
+    for (int i = 0; i < height; ++i) {
+        delete[] image[i];
     }
-    return ascii;
+    delete[] image;
 }
+
