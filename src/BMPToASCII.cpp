@@ -1,11 +1,16 @@
+#include <ASCIImagicExceptions.hpp>
 #include "BMPToASCII.h"
 
-BMPToASCII::BMPToASCII(const std::string &filename) {
+BMPToASCII::BMPToASCII(const std::string& filename)
+        : filename(filename) {}
+
+void BMPToASCII::loadImage() {
+    SetEasyBMPwarningsOff();
     BMP bmp;
-    bmp.ReadFromFile(filename.c_str());
+    if(!bmp.ReadFromFile(filename.c_str())) throw DecoderError();
     width = bmp.TellWidth();
     height = bmp.TellHeight();
-    image = new pixel*[height];
+    image = new pixel* [height];
     for (int i = 0; i < height; ++i) {
         image[i] = new pixel[width];
     }

@@ -1,13 +1,18 @@
+#include <iostream>
 #include "PNGToASCII.h"
 #include "lodePNG/lodepng.h"
+#include "ASCIImagicExceptions.hpp"
 
-PNGToASCII::PNGToASCII(const std::string& filename) {
+PNGToASCII::PNGToASCII(const std::string& filename)
+        : filename(filename) {}
+
+void PNGToASCII::loadImage() {
     std::vector<unsigned char> png;
     unsigned w, h;
     unsigned error = lodepng::decode(png, w, h, filename);
     if (error) {
-        // TODO: something
-        throw "";
+        std::cerr << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
+        throw DecoderError();
     }
     height = h;
     width = w;

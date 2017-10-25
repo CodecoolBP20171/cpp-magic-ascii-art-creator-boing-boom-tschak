@@ -2,6 +2,7 @@
 #include <cstring>
 #include <BMPToASCII.h>
 #include <PNGToASCII.h>
+#include <ASCIImagicExceptions.hpp>
 
 namespace {
     const std::string acceptedFileTypes[] = {
@@ -41,7 +42,16 @@ int main(int argc, char* argv[]) {
         std::cout << "Invalid filename or type." << std::endl;
         return 1;
     }
-    PNGToASCII png(filename);
-    std::cout << png.getASCIIString() << std::endl;
+    PNGToASCII image(filename);
+    try {
+        image.loadImage();
+        std::cout << image.getASCIIString() << std::endl;
+    } catch (DecoderError& e){
+        std::cerr << e.what() << std::endl;
+    } catch (NoImageLoaded& e){
+        std::cerr << e.what() << std::endl;
+    } catch(...){
+        std::cerr << "SOmething unexpected happened" << std::endl;
+    }
     return 0;
 }

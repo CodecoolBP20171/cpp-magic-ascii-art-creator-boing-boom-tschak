@@ -6,6 +6,9 @@
 class PNGToASCII : public ImageToASCII {
 public:
     explicit PNGToASCII(const std::string& filename);
+    void loadImage() override;
+private:
+    std::string filename;
 };
 
 #endif //ASCII_MAGIC_PNGTOASCII_H
