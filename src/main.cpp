@@ -138,6 +138,7 @@ int main(int argc, char *argv[]) {
     }
     try {
         image->loadImage();
+        if (settings.color) image->convertToGrayscale();
         std::cout << image->getASCIIString() << std::endl;
     } catch (DecoderError &e) {
         std::cerr << e.what() << std::endl;

@@ -10,12 +10,12 @@ ImageToASCII::ImageToASCII()
           height(0) {}
 
 std::string ImageToASCII::getASCIIString() {
-    if(image) {
+    if (image) {
         std::string ascii;
         auto slen = scale.length() - 1;
-        for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; ++j) {
-                auto val = image[i][j].red;
+        for (int row = 0; row < height; ++row) {
+            for (int col = 0; col < width; ++col) {
+                auto val = image[row][col].red;
                 auto normVal = round(val / 255.0 * slen);
                 ascii += scale[normVal];
             }
@@ -27,7 +27,7 @@ std::string ImageToASCII::getASCIIString() {
 }
 
 ImageToASCII::~ImageToASCII() {
-    if(image) {
+    if (image) {
         for (int i = 0; i < height; ++i) {
             delete[] image[i];
         }
@@ -37,12 +37,30 @@ ImageToASCII::~ImageToASCII() {
 
 bool ImageToASCII::allocateImage() {
     try {
-        image = new pixel* [height];
+        image = new pixel *[height];
         for (int i = 0; i < height; ++i) {
             image[i] = new pixel[width];
         }
-    } catch (std::bad_alloc& e){
+    } catch (std::bad_alloc &e) {
         return false;
     }
     return true;
+}
+
+void ImageToASCII::convertToGrayscale() {
+    if (image) {
+        for (int row = 0; row < height; ++row) {
+            for (int col = 0; col < width; ++col) {
+                auto val = static_cast<ubyte>(round(
+                        image[row][col].red * 0.3 +
+                        image[row][col].green * 0.59 +
+                        image[row][col].blue * 0.11));
+                image[row][col].red = val;
+                image[row][col].green = val;
+                image[row][col].blue = val;
+            }
+        }
+    } else {
+        throw NoImageLoaded();
+    }
 }

@@ -4,9 +4,9 @@
 #include <string>
 #include <memory>
 
-using byte = unsigned char;
+using ubyte = unsigned char;
 struct pixel {
-    byte red, green, blue, alpha;
+    ubyte red, green, blue, alpha;
 };
 
 class ImageToASCII {
@@ -14,6 +14,7 @@ public:
     ImageToASCII();
     std::string getASCIIString();
     virtual void loadImage() = 0;
+    void convertToGrayscale();
     virtual ~ImageToASCII();
 protected:
     const static std::string scale;
