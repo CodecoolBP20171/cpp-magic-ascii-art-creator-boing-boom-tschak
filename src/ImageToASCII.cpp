@@ -3,7 +3,7 @@
 
 const std::string ImageToASCII::scale = "@#8&o:*. ";
 
-std::string ImageToASCII::getASCIString() {
+std::string ImageToASCII::getASCIIString() {
     std::string ascii;
     auto slen = scale.length() - 1;
     for (int i = 0; i < height; ++i) {

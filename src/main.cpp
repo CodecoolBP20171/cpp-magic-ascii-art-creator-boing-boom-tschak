@@ -41,6 +41,6 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     BMPToASCII bmp(filename);
-    std::cout << bmp.getASCIString() << std::endl;
+    std::cout << bmp.getASCIIString() << std::endl;
     return 0;
 }
