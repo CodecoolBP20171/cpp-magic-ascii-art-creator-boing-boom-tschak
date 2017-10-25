@@ -24,4 +24,11 @@ public:
     }
 };
 
+class InvalidArgument : public std::exception {
+public:
+    const char *what() const noexcept override {
+        return "Invalid argument(s) given.";
+    }
+};
+
 #endif //ASCII_MAGIC_ASCIIMAGICEXCEPTIONS_HPP
