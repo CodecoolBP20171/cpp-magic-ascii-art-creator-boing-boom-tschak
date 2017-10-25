@@ -10,10 +10,7 @@ void BMPToASCII::loadImage() {
     if(!bmp.ReadFromFile(filename.c_str())) throw DecoderError();
     width = bmp.TellWidth();
     height = bmp.TellHeight();
-    image = new pixel* [height];
-    for (int i = 0; i < height; ++i) {
-        image[i] = new pixel[width];
-    }
+    if(!allocateImage()) throw MemoryError();
     for (int i = 0; i < height; ++i) {
         for (int j = 0; j < width; ++j) {
             image[i][j].red = bmp(j, i)->Red;

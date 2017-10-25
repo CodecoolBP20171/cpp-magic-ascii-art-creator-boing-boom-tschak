@@ -12,6 +12,6 @@ set(SOURCES
         src/ImageToASCII.cpp
         src/PNGToASCII.cpp
         include/ASCIImagicExceptions.hpp
-        )
+        src/JPEGToASCII.cpp include/JPEGToASCII.h)
 add_executable(ascii_magic ${SOURCES})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)

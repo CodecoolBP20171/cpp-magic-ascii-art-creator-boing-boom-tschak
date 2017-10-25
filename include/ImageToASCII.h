@@ -19,6 +19,7 @@ protected:
     const static std::string scale;
     pixel** image;
     int width, height;
+    bool allocateImage();
 };
 
 #endif //ASCII_MAGIC_IMAGETOASCII_H

@@ -34,3 +34,15 @@ ImageToASCII::~ImageToASCII() {
         delete[] image;
     }
 }
+
+bool ImageToASCII::allocateImage() {
+    try {
+        image = new pixel* [height];
+        for (int i = 0; i < height; ++i) {
+            image[i] = new pixel[width];
+        }
+    } catch (std::bad_alloc& e){
+        return false;
+    }
+    return true;
+}

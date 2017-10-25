@@ -16,10 +16,7 @@ void PNGToASCII::loadImage() {
     }
     height = h;
     width = w;
-    image = new pixel* [height];
-    for (int i = 0; i < height; ++i) {
-        image[i] = new pixel[width];
-    }
+    if(!allocateImage()) throw MemoryError();
     size_t idx = 0;
     for (int row = 0; row < height; ++row) {
         for (int col = 0; col < width; ++col) {

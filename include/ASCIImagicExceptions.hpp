@@ -17,4 +17,11 @@ public:
     }
 };
 
+class MemoryError : public std::exception {
+public:
+    const char* what() const noexcept override {
+        return "Couldn't allocate memory.";
+    }
+};
+
 #endif //ASCII_MAGIC_ASCIIMAGICEXCEPTIONS_HPP

@@ -3,6 +3,7 @@
 #include <BMPToASCII.h>
 #include <PNGToASCII.h>
 #include <ASCIImagicExceptions.hpp>
+#include <JPEGToASCII.h>
 
 namespace {
     const std::string acceptedFileTypes[] = {
@@ -42,16 +43,28 @@ int main(int argc, char* argv[]) {
         std::cout << "Invalid filename or type." << std::endl;
         return 1;
     }
-    PNGToASCII image(filename);
+    ImageToASCII* image;
+    if(filetype == "bmp"){
+        image = new BMPToASCII(filename);
+    } else if(filetype == "png") {
+        image = new PNGToASCII(filename);
+    } else if(filetype == "jpg") {
+        image = new JPEGToASCII(filename);
+    } else {
+        std::cerr << "THis should never happen." << std::endl;
+        return 1;
+    }
     try {
-        image.loadImage();
-        std::cout << image.getASCIIString() << std::endl;
+        image->loadImage();
+        std::cout << image->getASCIIString() << std::endl;
     } catch (DecoderError& e){
         std::cerr << e.what() << std::endl;
     } catch (NoImageLoaded& e){
         std::cerr << e.what() << std::endl;
+    } catch (MemoryError& e) {
+        std::cerr << e.what() << std::endl;
     } catch(...){
-        std::cerr << "SOmething unexpected happened" << std::endl;
+        std::cerr << "Something unexpected happened" << std::endl;
     }
     return 0;
 }
