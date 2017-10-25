@@ -16,3 +16,10 @@ std::string ImageToASCII::getASCIIString() {
     }
     return ascii;
 }
+
+ImageToASCII::~ImageToASCII() {
+    for (int i = 0; i < height; ++i) {
+        delete[] image[i];
+    }
+    delete[] image;
+}

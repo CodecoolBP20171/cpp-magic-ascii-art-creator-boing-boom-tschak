@@ -12,6 +12,7 @@ struct pixel {
 class ImageToASCII {
 public:
     std::string getASCIIString();
+    virtual ~ImageToASCII();
 protected:
     const static std::string scale;
     pixel** image;

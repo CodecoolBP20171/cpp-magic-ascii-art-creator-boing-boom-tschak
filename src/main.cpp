@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include <BMPToASCII.h>
+#include <PNGToASCII.h>
 
 namespace {
     const std::string acceptedFileTypes[] = {
@@ -40,7 +41,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Invalid filename or type." << std::endl;
         return 1;
     }
-    BMPToASCII bmp(filename);
-    std::cout << bmp.getASCIIString() << std::endl;
+    PNGToASCII png(filename);
+    std::cout << png.getASCIIString() << std::endl;
     return 0;
 }

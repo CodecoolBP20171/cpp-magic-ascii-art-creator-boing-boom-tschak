@@ -18,11 +18,3 @@ BMPToASCII::BMPToASCII(const std::string &filename) {
         }
     }
 }
-
-BMPToASCII::~BMPToASCII() {
-    for (int i = 0; i < height; ++i) {
-        delete[] image[i];
-    }
-    delete[] image;
-}
-
