@@ -18,19 +18,20 @@ void JPEGToASCII::loadImage() {
     auto buffer = new char[size];
     if (!file.read(buffer, size)) throw DecoderError();
     if (njDecode(buffer, size)) throw DecoderError();
-    width = njGetWidth();
-    height = njGetHeight();
+    image.width = njGetWidth();
+    image.height = njGetHeight();
     if (!allocateImage()) throw MemoryError();
     auto jpg = njGetImage();
     size_t idx = 0;
-    for (int row = 0; row < height; ++row) {
-        for (int col = 0; col < width; ++col) {
-            image[row][col].red = jpg[idx];
-            image[row][col].green = jpg[idx + 1];
-            image[row][col].blue = jpg[idx + 2];
-            image[row][col].alpha = 255;
+    for (int row = 0; row < image.height; ++row) {
+        for (int col = 0; col < image.width; ++col) {
+            image.image[row][col].red = jpg[idx];
+            image.image[row][col].green = jpg[idx + 1];
+            image.image[row][col].blue = jpg[idx + 2];
+            image.image[row][col].alpha = 255;
             idx += 3;
         }
     }
     njDone();
+    delete[] buffer;
 }

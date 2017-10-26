@@ -6,18 +6,20 @@
 
 const std::string ImageToASCII::scale = "@#8&o:*. ";
 
-ImageToASCII::ImageToASCII()
+imageData::imageData()
         : image(nullptr),
           width(0),
           height(0) {}
 
+ImageToASCII::ImageToASCII() : image() {}
+
 std::string ImageToASCII::getASCIIString() {
-    if (image) {
+    if (image.image) {
         std::string ascii;
         auto slen = scale.length() - 1;
-        for (int row = 0; row < height; ++row) {
-            for (int col = 0; col < width; ++col) {
-                auto val = image[row][col].red;
+        for (int row = 0; row < image.height; ++row) {
+            for (int col = 0; col < image.width; ++col) {
+                auto val = image.image[row][col].red;
                 auto normVal = round(val / 255.0 * slen);
                 ascii += scale[normVal];
             }
@@ -29,19 +31,19 @@ std::string ImageToASCII::getASCIIString() {
 }
 
 ImageToASCII::~ImageToASCII() {
-    if (image) {
-        for (int i = 0; i < height; ++i) {
-            delete[] image[i];
+    if (image.image) {
+        for (int i = 0; i < image.height; ++i) {
+            delete[] image.image[i];
         }
-        delete[] image;
+        delete[] image.image;
     }
 }
 
 bool ImageToASCII::allocateImage() {
     try {
-        image = new pixel* [height];
-        for (int i = 0; i < height; ++i) {
-            image[i] = new pixel[width];
+        image.image = new pixel* [image.height];
+        for (int i = 0; i < image.height; ++i) {
+            image.image[i] = new pixel[image.width];
         }
     } catch (std::bad_alloc& e) {
         return false;
@@ -50,16 +52,16 @@ bool ImageToASCII::allocateImage() {
 }
 
 void ImageToASCII::convertToGrayscale() {
-    if (image) {
-        for (int row = 0; row < height; ++row) {
-            for (int col = 0; col < width; ++col) {
+    if (image.image) {
+        for (int row = 0; row < image.height; ++row) {
+            for (int col = 0; col < image.width; ++col) {
                 auto val = static_cast<ubyte>(round(
-                        image[row][col].red * 0.3 +
-                        image[row][col].green * 0.59 +
-                        image[row][col].blue * 0.11));
-                image[row][col].red = val;
-                image[row][col].green = val;
-                image[row][col].blue = val;
+                        image.image[row][col].red * 0.3 +
+                        image.image[row][col].green * 0.59 +
+                        image.image[row][col].blue * 0.11));
+                image.image[row][col].red = val;
+                image.image[row][col].green = val;
+                image.image[row][col].blue = val;
             }
         }
     } else {
@@ -78,42 +80,53 @@ void ImageToASCII::saveASCIIToFile(const std::string& filename) {
 }
 
 void ImageToASCII::resizeImage(double ratio) {
-    if (image) {
+    if (image.image) {
         auto oldImage = image;
-        auto oldWidth = width;
-        auto oldHeight = height;
-        width = static_cast<int>(floor(width * ratio));
-        height = static_cast<int>(floor(height * ratio));
+        image.width = static_cast<int>(floor(image.width * ratio));
+        image.height = static_cast<int>(floor(image.height * ratio));
         auto stepSize = 1 / ratio;
         auto offset = static_cast<int>(ceil(stepSize / 2));
         if (!allocateImage()) throw MemoryError();
-        for (int row = 0; row < height; ++row) {
-            auto oldRow = static_cast<int>(round(row * stepSize));
-            for (int col = 0; col < width; ++col) {
-                auto oldCol = static_cast<int>(round(col * stepSize));
-                int cnt = 0;
-                int sum = 0;
-                for (int currRow = std::max(0, oldRow - offset);
-                     currRow < std::min(oldHeight, oldRow + offset + 1);
-                     ++currRow) {
-                    for(int currCol = std::max(0, oldCol-offset);
-                            currCol<std::min(oldWidth, oldCol+offset+1);
-                            ++currCol){
-                        ++cnt;
-                        sum += oldImage[currRow][currCol].red;
-                    }
-                }
-                auto newVal = static_cast<ubyte>(sum/cnt);
-                image[row][col].red = newVal;
-                image[row][col].green = newVal;
-                image[row][col].blue = newVal;
-            }
-        }
-        for (int i = 0; i < oldHeight; ++i) {
-            delete[] oldImage[i];
-        }
-        delete[] oldImage;
+        calculateNewImage(oldImage, stepSize, offset);
+        deleteOldImage(oldImage);
     } else {
         throw NoImageLoaded();
     }
+}
+
+void ImageToASCII::calculateNewImage(const imageData& oldImage, double stepSize, int offset) const {
+    for (int row = 0; row < image.height; ++row) {
+        auto oldRow = static_cast<int>(round(row * stepSize));
+        for (int col = 0; col < image.width; ++col) {
+            auto oldCol = static_cast<int>(round(col * stepSize));
+            ubyte newVal = getNewValue(oldImage, offset, oldRow, oldCol);
+            image.image[row][col].red = newVal;
+            image.image[row][col].green = newVal;
+            image.image[row][col].blue = newVal;
+        }
+    }
+}
+
+void ImageToASCII::deleteOldImage(const imageData& oldImage) const {
+    for (int i = 0; i < oldImage.height; ++i) {
+        delete[] oldImage.image[i];
+    }
+    delete[] oldImage.image;
+}
+
+ubyte ImageToASCII::getNewValue(const imageData& oldImage, int offset, int oldRow, int oldCol) const {
+    int cnt = 0;
+    int sum = 0;
+    for (int currRow = std::max(0, oldRow - offset);
+         currRow < std::min(oldImage.height, oldRow + offset + 1);
+         ++currRow) {
+        for (int currCol = std::max(0, oldCol - offset);
+             currCol < std::min(oldImage.width, oldCol + offset + 1);
+             ++currCol) {
+            ++cnt;
+            sum += oldImage.image[currRow][currCol].red;
+        }
+    }
+    auto newVal = static_cast<ubyte>(sum / cnt);
+    return newVal;
 }

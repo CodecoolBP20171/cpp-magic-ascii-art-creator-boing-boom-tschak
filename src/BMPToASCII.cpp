@@ -8,15 +8,15 @@ void BMPToASCII::loadImage() {
     SetEasyBMPwarningsOff();
     BMP bmp;
     if(!bmp.ReadFromFile(filename.c_str())) throw DecoderError();
-    width = bmp.TellWidth();
-    height = bmp.TellHeight();
+    image.width = bmp.TellWidth();
+    image.height = bmp.TellHeight();
     if(!allocateImage()) throw MemoryError();
-    for (int row = 0; row < height; ++row) {
-        for (int col = 0; col < width; ++col) {
-            image[row][col].red = bmp(col, row)->Red;
-            image[row][col].green = bmp(col, row)->Green;
-            image[row][col].blue = bmp(col, row)->Blue;
-            image[row][col].alpha = bmp(col, row)->Alpha;
+    for (int row = 0; row < image.height; ++row) {
+        for (int col = 0; col < image.width; ++col) {
+            image.image[row][col].red = bmp(col, row)->Red;
+            image.image[row][col].green = bmp(col, row)->Green;
+            image.image[row][col].blue = bmp(col, row)->Blue;
+            image.image[row][col].alpha = bmp(col, row)->Alpha;
         }
     }
 }
