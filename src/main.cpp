@@ -27,7 +27,7 @@ namespace {
                   resize(1) {}
     };
 
-    fileType parseType(const std::string &filetype) {
+    fileType parseType(const std::string& filetype) {
         // TODO: other jpeg extensions
         if (filetype == "bmp") {
             return TBMP;
@@ -40,7 +40,7 @@ namespace {
         }
     }
 
-    options parseArgs(int argc, char *const *argv) {
+    options parseArgs(int argc, char* const* argv) {
         options result;
         for (int i = 1; i < argc; i += 2) {
             if (argv[i][0] != '-') throw InvalidArgument();
@@ -69,12 +69,12 @@ namespace {
         return result;
     }
 
-    bool isFileExists(const std::string &name) {
+    bool isFileExists(const std::string& name) {
         std::ifstream f(name.c_str());
         return f.good();
     }
 
-    fileType guessType(const std::string &filename) {
+    fileType guessType(const std::string& filename) {
         auto ext = filename.substr(filename.rfind('.') + 1);
         return parseType(ext);
     }
@@ -87,19 +87,17 @@ namespace {
     }
 
     std::string generateTxtFilename(std::string& sourceFilename) {
-        auto txtFileName = sourceFilename.substr(0, sourceFilename.rfind('.')+1)+"txt";
+        auto txtFileName = sourceFilename.substr(0, sourceFilename.rfind('.') + 1) + "txt";
         return txtFileName;
     }
 }
 
-
-
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     // TODO: case sensitivity?
     options settings;
     try {
         settings = parseArgs(argc, argv);
-    } catch (InvalidArgument &err) {
+    } catch (InvalidArgument& err) {
         printUsage();
         return 1;
     } catch (...) {
@@ -113,7 +111,7 @@ int main(int argc, char *argv[]) {
     if (settings.type == INVALID_TYPE) {
         try {
             settings.type = guessType(settings.filename);
-        } catch (std::out_of_range &err) {
+        } catch (std::out_of_range& err) {
             std::cout << "Invalid filename.\n";
             return 1;
         }
@@ -124,6 +122,10 @@ int main(int argc, char *argv[]) {
     }
     if (!isFileExists(settings.filename)) {
         std::cout << "File does not exists.\n";
+        return 1;
+    }
+    if (settings.resize <= 0 || settings.resize > 1) {
+        std::cout << "Invalid resize argument. (0 < resize <= 1)" << std::endl;
         return 1;
     }
     std::unique_ptr<ImageToASCII> image;
@@ -144,26 +146,21 @@ int main(int argc, char *argv[]) {
     try {
         image->loadImage();
         if (settings.color) image->convertToGrayscale();
-        std::cout << image->getASCIIString() << std::endl;
-
-        /////////
-
+        if (settings.resize != 1) image->resizeImage(settings.resize);
+            std::cout << image->getASCIIString() << std::endl;
         try {
             image->saveASCIIToFile(generateTxtFilename(settings.filename));
-        } catch (saveASCIIToFileError &err) {
+        } catch (saveASCIIToFileError& err) {
             std::cerr << err.what() << std::endl;
             return 1;
         };
-
-        /////////
-
-    } catch (DecoderError &e) {
+    } catch (DecoderError& e) {
         std::cerr << e.what() << std::endl;
         return 1;
-    } catch (NoImageLoaded &e) {
+    } catch (NoImageLoaded& e) {
         std::cerr << e.what() << std::endl;
         return 1;
-    } catch (MemoryError &e) {
+    } catch (MemoryError& e) {
         std::cerr << e.what() << std::endl;
         return 1;
     } catch (...) {

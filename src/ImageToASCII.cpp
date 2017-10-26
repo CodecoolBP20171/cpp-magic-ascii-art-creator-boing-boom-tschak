@@ -39,11 +39,11 @@ ImageToASCII::~ImageToASCII() {
 
 bool ImageToASCII::allocateImage() {
     try {
-        image = new pixel *[height];
+        image = new pixel* [height];
         for (int i = 0; i < height; ++i) {
             image[i] = new pixel[width];
         }
-    } catch (std::bad_alloc &e) {
+    } catch (std::bad_alloc& e) {
         return false;
     }
     return true;
@@ -67,7 +67,7 @@ void ImageToASCII::convertToGrayscale() {
     }
 }
 
-void ImageToASCII::saveASCIIToFile(const std::string &filename) {
+void ImageToASCII::saveASCIIToFile(const std::string& filename) {
     std::ofstream txtFile;
     txtFile.open(filename, std::ios_base::trunc);
     if (!txtFile.is_open() || txtFile.fail()) {
@@ -75,4 +75,45 @@ void ImageToASCII::saveASCIIToFile(const std::string &filename) {
     }
     txtFile << getASCIIString();
     txtFile.close();
+}
+
+void ImageToASCII::resizeImage(double ratio) {
+    if (image) {
+        auto oldImage = image;
+        auto oldWidth = width;
+        auto oldHeight = height;
+        width = static_cast<int>(floor(width * ratio));
+        height = static_cast<int>(floor(height * ratio));
+        auto stepSize = 1 / ratio;
+        auto offset = static_cast<int>(ceil(stepSize / 2));
+        if (!allocateImage()) throw MemoryError();
+        for (int row = 0; row < height; ++row) {
+            auto oldRow = static_cast<int>(round(row * stepSize));
+            for (int col = 0; col < width; ++col) {
+                auto oldCol = static_cast<int>(round(col * stepSize));
+                int cnt = 0;
+                int sum = 0;
+                for (int currRow = std::max(0, oldRow - offset);
+                     currRow < std::min(oldHeight, oldRow + offset + 1);
+                     ++currRow) {
+                    for(int currCol = std::max(0, oldCol-offset);
+                            currCol<std::min(oldWidth, oldCol+offset+1);
+                            ++currCol){
+                        ++cnt;
+                        sum += oldImage[currRow][currCol].red;
+                    }
+                }
+                auto newVal = static_cast<ubyte>(sum/cnt);
+                image[row][col].red = newVal;
+                image[row][col].green = newVal;
+                image[row][col].blue = newVal;
+            }
+        }
+        for (int i = 0; i < oldHeight; ++i) {
+            delete[] oldImage[i];
+        }
+        delete[] oldImage;
+    } else {
+        throw NoImageLoaded();
+    }
 }
