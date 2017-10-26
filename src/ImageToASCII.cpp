@@ -1,5 +1,7 @@
 #include <cmath>
 #include <ASCIImagicExceptions.hpp>
+#include <fstream>
+#include <iostream>
 #include "ImageToASCII.h"
 
 const std::string ImageToASCII::scale = "@#8&o:*. ";
@@ -63,4 +65,14 @@ void ImageToASCII::convertToGrayscale() {
     } else {
         throw NoImageLoaded();
     }
+}
+
+void ImageToASCII::saveASCIIToFile(const std::string &filename) {
+    std::ofstream txtFile;
+    txtFile.open(filename, std::ios_base::trunc);
+    if (!txtFile.is_open() || txtFile.fail()) {
+        throw saveASCIIToFileError();
+    }
+    txtFile << getASCIIString();
+    txtFile.close();
 }

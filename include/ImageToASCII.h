@@ -15,6 +15,7 @@ public:
     std::string getASCIIString();
     virtual void loadImage() = 0;
     void convertToGrayscale();
+    void saveASCIIToFile(const std::string &);
     virtual ~ImageToASCII();
 protected:
     const static std::string scale;

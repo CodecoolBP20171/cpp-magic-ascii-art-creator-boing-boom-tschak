@@ -85,6 +85,11 @@ namespace {
                 "\n\t\t\t\t\t[-color]"
                 "\n\t\t\t\t\t[-r <resize_ratio>]" << std::endl;
     }
+
+    std::string generateTxtFilename(std::string& sourceFilename) {
+        auto txtFileName = sourceFilename.substr(0, sourceFilename.rfind('.')+1)+"txt";
+        return txtFileName;
+    }
 }
 
 
@@ -140,14 +145,30 @@ int main(int argc, char *argv[]) {
         image->loadImage();
         if (settings.color) image->convertToGrayscale();
         std::cout << image->getASCIIString() << std::endl;
+
+        /////////
+
+        try {
+            image->saveASCIIToFile(generateTxtFilename(settings.filename));
+        } catch (saveASCIIToFileError &err) {
+            std::cerr << err.what() << std::endl;
+            return 1;
+        };
+
+        /////////
+
     } catch (DecoderError &e) {
         std::cerr << e.what() << std::endl;
+        return 1;
     } catch (NoImageLoaded &e) {
         std::cerr << e.what() << std::endl;
+        return 1;
     } catch (MemoryError &e) {
         std::cerr << e.what() << std::endl;
+        return 1;
     } catch (...) {
         std::cerr << "Something unexpected happened" << std::endl;
+        return 1;
     }
     return 0;
 }

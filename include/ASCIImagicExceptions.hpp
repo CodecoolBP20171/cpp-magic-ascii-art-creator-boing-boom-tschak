@@ -31,4 +31,11 @@ public:
     }
 };
 
+class saveASCIIToFileError : public std::exception {
+public:
+    const char *what() const noexcept override {
+        return "Saving ASCII art to file failed.";
+    }
+};
+
 #endif //ASCII_MAGIC_ASCIIMAGICEXCEPTIONS_HPP
